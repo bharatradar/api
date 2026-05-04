@@ -52,9 +52,7 @@ The API will return a JSON response.
 ## Feeders
 
 By sending data to BharatRadar, you get access to the
-[direct readsb re-api](https://www.bharatradar.com/docs/feeders-only/re-api/)
-and
-[our raw aggregated data](https://www.bharatradar.com/docs/feeders-only/beast-mlat-out/). :)
+direct readsb re-api and our raw aggregated data. :)
 
 ## Terms of Service
 You can use the API for free.

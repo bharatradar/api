@@ -16,6 +16,6 @@ Rate limits are dynamic based on the environment load.
 
 If you get 4xx errors, you are doing something wrong. 
 
-In the future, you will require an API key which you can obtain by [feeding to BharatRadar](https://bharatradar.com/feed).
+In the future, you will require an API key which you can obtain by [feeding to BharatRadar](https://bharatradar.com/#become-feeder).
 
 This will be a way to ensure that the API is being used responsibly and by people who are willing to contribute to the project.
