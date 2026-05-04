@@ -26,7 +26,7 @@ from adsb_api.utils.api_tar import router as tar_router
 from adsb_api.utils.api_v2 import router as v2_router
 from adsb_api.utils.dependencies import browser, feederData, provider, redisVRS
 from adsb_api.utils.models import ApiUuidRequest, PrettyJSONResponse
-from adsb_api.utils.settings import (INSECURE, REDIS_KEY_BEAST_CLIENTS, REDIS_KEY_BEAST_RECEIVERS, REDIS_KEY_HUB_AIRCRAFT, REDIS_KEY_MLAT_CLIENTS, REDIS_KEY_MLAT_SYNC, REDIS_KEY_MLAT_TOTALCOUNT, REDIS_HOST, SALT_BEAST,
+from adsb_api.utils.settings import (INSECURE, MY_DOMAIN, REDIS_KEY_BEAST_CLIENTS, REDIS_KEY_BEAST_RECEIVERS, REDIS_KEY_HUB_AIRCRAFT, REDIS_KEY_MLAT_CLIENTS, REDIS_KEY_MLAT_SYNC, REDIS_KEY_MLAT_TOTALCOUNT, REDIS_HOST, SALT_BEAST,
                                      SALT_MLAT, SALT_MY)
 
 PROJECT_PATH = pathlib.Path(__file__).parent.parent.parent
@@ -41,8 +41,8 @@ async def get_http_session() -> aiohttp.ClientSession:
     return _http_session
 
 description = """
-The adsb.lol API is a free and open source
-API for the [adsb.lol](https://adsb.lol) project.
+The BharatRadar API is a free and open source
+API for the [BharatRadar](https://bharatradar.com) project.
 
 ## Usage
 You can use the API by sending a GET request
@@ -51,16 +51,16 @@ The API will return a JSON response.
 
 ## Feeders
 
-By sending data to adsb.lol, you get access to the
-[direct readsb re-api](https://www.adsb.lol/docs/feeders-only/re-api/)
+By sending data to BharatRadar, you get access to the
+[direct readsb re-api](https://www.bharatradar.com/docs/feeders-only/re-api/)
 and
-[our raw aggregated data](https://www.adsb.lol/docs/feeders-only/beast-mlat-out/). :)
+[our raw aggregated data](https://www.bharatradar.com/docs/feeders-only/beast-mlat-out/). :)
 
 ## Terms of Service
 You can use the API for free.
 
 In the future, you will require an API key
-which you can get by feeding to adsb.lol.
+which you can get by feeding to BharatRadar.
 
 Rate limits are dynamic based on the environment load. 
 
@@ -68,7 +68,7 @@ If you get 4xx errors, you are doing something wrong.
 
 ## License
 
-The license for the API as well as all data ADSB.lol
+The license for the API as well as all data BharatRadar
 makes public is [ODbL](https://opendatacommons.org/licenses/odbl/summary/).
 
 This is the same license
@@ -76,7 +76,7 @@ This is the same license
 """
 
 app = FastAPI(
-    title="adsb.lol API",
+    title="BharatRadar API",
     description=description,
     version="0.0.2",
     docs_url=None,
@@ -105,7 +105,7 @@ async def favicon():
 def docs_override():
     return get_swagger_ui_html(
         openapi_url="/api/openapi.json",
-        title="adsb.lol API",
+        title="BharatRadar API",
         swagger_favicon_url="/favicon.ico",
     )
 
@@ -173,8 +173,8 @@ async def mlat_receivers(
     server: str,
     host: str | None = Header(default=None, include_in_schema=False),
 ):
-    if host != "mlat.adsb.lol":
-        print(f"failed mlat_sync host={host}, server={server} (not mlat.adsb.lol)")
+    if host != "mlat.bharatradar.com":
+        print(f"failed mlat_sync host={host}, server={server} (not mlat.bharatradar.com)")
         return {"error": "not found"}
 
     mlat_sync = await provider._json_get(REDIS_KEY_MLAT_SYNC)
@@ -265,14 +265,11 @@ async def api_my(request: Request):
     uids = []
     if len(my_beast_clients) == 0:
         return RedirectResponse(
-            url="https://adsb.lol#sorry-but-i-could-not-find-your-receiver?"
+            url="https://map.bharatradar.com#sorry-but-i-could-not-find-your-receiver?"
         )
     for client in my_beast_clients:
-        uids.append(client["adsblol_my_url"].split("https://")[1].split(".")[0])
-    # redirect to
-    # uid1_uid2.my.adsb.lol
-    host = "https://" + "_".join(uids) + ".my.adsb.lol"
-    return RedirectResponse(url=host)
+        uids.append(client["bharatradar_my_url"].split("https://")[1].split(".")[0])
+    return RedirectResponse(url=f"https://map.bharatradar.com/")
 
 
 @app.get(
@@ -283,7 +280,7 @@ async def receiver_json(
 ):
     ret = {
         "readsb": True,
-        "version": "adsb.lol",
+        "version": "bharatradar",
         "refresh": 1000,
     }
     # add feederData.additional_receiver_params

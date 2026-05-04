@@ -12,7 +12,7 @@ provider = Provider(enabled_bg_tasks=ENABLED_BG_TASKS)
 redisVRS = RedisVRS()
 feederData = FeederData()
 browser = BrowserTabPool(
-    url="https://adsb.lol/",
+    url="https://map.bharatradar.com/",
     before_add_to_pool_cb=before_add_to_pool_cb,
     before_return_to_pool_cb=before_return_to_pool_cb,
 )

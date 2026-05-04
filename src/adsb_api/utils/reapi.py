@@ -37,7 +37,7 @@ if __name__ == "__main__":
     import asyncio
 
     async def main():
-        reapi = ReAPI("https://re-api.adsb.lol/re-api/")
+        reapi = ReAPI("http://localhost:30152/re-api/")
         params = ["all", "jv2"]
         response = await reapi.request(params)
         print(response)

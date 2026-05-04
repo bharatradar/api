@@ -16,7 +16,7 @@ import orjson
 import redis.asyncio as redis
 
 from adsb_api.utils.reapi import ReAPI
-from adsb_api.utils.settings import (INGEST_DNS, INGEST_HTTP_PORT, MLAT_SERVERS, REAPI_ENDPOINT, REDIS_KEY_BEAST_CLIENTS, REDIS_KEY_BEAST_RECEIVERS, REDIS_KEY_HUB_AIRCRAFT, REDIS_KEY_MLAT_CLIENTS, REDIS_KEY_MLAT_SYNC, REDIS_KEY_MLAT_TOTALCOUNT, SALT_MLAT, SALT_MY, STATS_URL)
+from adsb_api.utils.settings import (INGEST_DNS, INGEST_HTTP_PORT, MLAT_SERVERS, MY_DOMAIN, REAPI_ENDPOINT, REDIS_KEY_BEAST_CLIENTS, REDIS_KEY_BEAST_RECEIVERS, REDIS_KEY_HUB_AIRCRAFT, REDIS_KEY_MLAT_CLIENTS, REDIS_KEY_MLAT_SYNC, REDIS_KEY_MLAT_TOTALCOUNT, SALT_MLAT, SALT_MY, STATS_URL)
 
 _HOSTNAME = gethostname()
 _UNKNOWN_ROUTE = {"callsign": "", "number": "unknown", "airline_code": "unknown", "airport_codes": "unknown", "_airport_codes_iata": "unknown", "_airports": []}
@@ -220,7 +220,7 @@ class Provider(BackgroundTaskMixin, Base):
             key = (c[0], c[1].split()[1])
             if key not in seen:
                 seen.add(key)
-                uniq.append({"uuid": c[0][:13] + "-...", "_uuid": c[0], "adsblol_my_url": f"https://{_humanhash(c[0][:18], SALT_MY)}.my.adsb.lol",
+                uniq.append({"uuid": c[0][:13] + "-...", "_uuid": c[0], "bharatradar_my_url": f"https://{_humanhash(c[0][:18], SALT_MY)}.{MY_DOMAIN}",
                             "ip": c[1].split()[1], "kbps": c[2], "connected_seconds": c[3], "messages_per_second": c[4],
                             "positions_per_second": c[5], "positions": c[8], "ms": c[7]})
         return uniq

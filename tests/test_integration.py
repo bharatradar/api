@@ -5,11 +5,11 @@ import aiohttp
 @pytest.fixture
 def test_client():
     return aiohttp.ClientSession(
-        headers={"User-agent": "adsblol integration test"}, raise_for_status=True
+        headers={"User-agent": "bharatradar integration test"}, raise_for_status=True
     )
 
 
-HOST = "https://api.adsb.lol"
+HOST = "https://api.bharatradar.com"
 
 
 @pytest.mark.asyncio

@@ -1,6 +1,6 @@
 # api
 
-This is the source code for the [adsb.lol](https://adsb.lol) API.
+This is the source code for the [BharatRadar](https://bharatradar.com) API.
 
 It runs in Kubernetes and is written in Python / asyncio / aiohttp.
 
@@ -8,7 +8,7 @@ It runs in Kubernetes and is written in Python / asyncio / aiohttp.
 
 ## Documentation
 
-Interactive documentation for the API lives at [api.adsb.lol/docs](https://api.adsb.lol/docs)
+Interactive documentation for the API lives at [api.bharatradar.com/docs](https://api.bharatradar.com/docs)
 
 ## Rate limits
 
@@ -16,6 +16,6 @@ Rate limits are dynamic based on the environment load.
 
 If you get 4xx errors, you are doing something wrong. 
 
-In the future, you will require an API key which you can obtain by [feeding adsb.lol](https://adsb.lol/feed).
+In the future, you will require an API key which you can obtain by [feeding to BharatRadar](https://bharatradar.com/feed).
 
 This will be a way to ensure that the API is being used responsibly and by people who are willing to contribute to the project.
