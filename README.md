@@ -1,5 +1,7 @@
 # api
 
+> **Version:** 5.4.0
+
 This is the source code for the [BharatRadar](https://bharatradar.com) API.
 
 It runs in Kubernetes and is written in Python / asyncio / aiohttp.
