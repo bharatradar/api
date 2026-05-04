@@ -1,4 +1,5 @@
 from typing import Callable
+import inspect
 
 from fastapi import APIRouter, Request, Path
 from fastapi.responses import Response
@@ -36,23 +37,29 @@ def _reapi_route(
     if isinstance(paths, str):
         paths = [paths]
 
-    def decorator(func):
-        async def handler(request: Request, **path_kwargs) -> Response:
-            actual_params = params(request) if callable(params) else params
-            res = await provider.ReAPI.request(params=actual_params, client_ip=request.client.host)
-            return Response(res, media_type="application/json")
+    sig_params = [inspect.Parameter('request', inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request)]
 
-        # Apply path param annotations if provided
-        if path_params:
-            for name, param in path_params.items():
-                handler.__annotations__[name] = param
+    async def _handler_impl(request: Request, **path_kwargs) -> Response:
+        actual_params = params(request) if callable(params) else params
+        res = await provider.ReAPI.request(params=actual_params, client_ip=request.client.host)
+        return Response(res, media_type="application/json")
 
-        # Register the route(s)
-        for path in paths:
-            router.get(path, summary=summary, description=description, **kwargs)(handler)
+    if path_params:
+        for name, param in path_params.items():
+            _handler_impl.__annotations__[name] = param
+            sig_params.append(inspect.Parameter(name, inspect.Parameter.KEYWORD_ONLY, default=param))
 
-        return handler
-    return decorator
+    _handler_impl.__signature__ = inspect.Signature(sig_params)
+
+    async def handler(*args, **kwargs) -> Response:
+        return await _handler_impl(*args, **kwargs)
+
+    handler.__signature__ = _handler_impl.__signature__
+    handler.__annotations__ = _handler_impl.__annotations__
+    handler.__name__ = '_handler_impl'
+
+    for path in paths:
+        router.get(path, summary=summary, description=description, **kwargs)(handler)
 
 
 # Static param routes
