@@ -1,6 +1,6 @@
 # api
 
-> **Version:** 5.4.0
+> **Version:** 5.7.0
 
 This is the source code for the [BharatRadar](https://bharatradar.com) API.
 
