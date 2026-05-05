@@ -264,6 +264,13 @@ async def api_me(request: Request):
     # If any bad
     return response
 
+@app.get("/", include_in_schema=False)
+async def root_redirect(request: Request):
+    host = request.headers.get("host", "")
+    if host.startswith("my."):
+        return RedirectResponse(url="/0/my")
+    return RedirectResponse(url=f"https://{host}/docs")
+
 @app.get("/0/my", tags=["v0"], summary="My Map redirect based on IP")
 @app.get("/api/0/my", tags=["v0"], summary="My Map redirect based on IP", include_in_schema=False)
 async def api_my(request: Request):
