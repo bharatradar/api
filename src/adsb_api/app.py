@@ -228,14 +228,31 @@ async def metrics():
     summary="Information about your receiver and global stats",
 )
 async def api_me(request: Request):
-    client_ip = request.client.host
-    my_beast_clients, mlat_clients = await asyncio.gather(
-        provider.get_clients_per_client_ip(client_ip),
-        provider.mlat_clients_to_list(client_ip),
-    )
+    try:
+        client_ip = request.client.host
+    except Exception:
+        client_ip = "unknown"
+    
+    try:
+        my_beast_clients, mlat_clients = await asyncio.gather(
+            provider.get_clients_per_client_ip(client_ip),
+            provider.mlat_clients_to_list(client_ip),
+        )
+    except Exception as e:
+        my_beast_clients = []
+        mlat_clients = []
+        print(f"Error getting clients: {e}")
 
-    data = await provider._json_gets([REDIS_KEY_MLAT_CLIENTS, REDIS_KEY_BEAST_CLIENTS, REDIS_KEY_HUB_AIRCRAFT])
-    mlat_data, beast_data, aircraft_count = data.get(REDIS_KEY_MLAT_CLIENTS) or {}, data.get(REDIS_KEY_BEAST_CLIENTS) or {}, data.get(REDIS_KEY_HUB_AIRCRAFT)
+    try:
+        data = await provider._json_gets([REDIS_KEY_MLAT_CLIENTS, REDIS_KEY_BEAST_CLIENTS, REDIS_KEY_HUB_AIRCRAFT])
+        mlat_data = data.get(REDIS_KEY_MLAT_CLIENTS) or {}
+        beast_data = data.get(REDIS_KEY_BEAST_CLIENTS) or {}
+        aircraft_count = data.get(REDIS_KEY_HUB_AIRCRAFT) or 0
+    except Exception as e:
+        mlat_data = {}
+        beast_data = {}
+        aircraft_count = 0
+        print(f"Error getting Redis data: {e}")
 
     response = {
         "_motd": [],
