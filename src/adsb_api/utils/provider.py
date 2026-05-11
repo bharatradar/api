@@ -291,6 +291,7 @@ class RedisVRS(BackgroundTaskMixin, Base):
 
     @_background_task(interval=60, lock="vrs_csv", lock_expire=3600, success_interval=3600)
     async def _loop(self):
+        all_success = True
         for name, url in (("route", "https://vrs-standing-data.adsb.lol/routes.csv.gz"), ("airport", "https://vrs-standing-data.adsb.lol/airports.csv.gz")):
             try:
                 async with self._session.get(url) as r:
@@ -302,10 +303,14 @@ class RedisVRS(BackgroundTaskMixin, Base):
                             count += 1
                         await pipe.execute()
                         print(f"[RedisVRS._loop] {name}: {count} rows")
+                    else:
+                        all_success = False
+                        print(f"[RedisVRS._loop] {name}: HTTP {r.status}")
             except Exception as e:
                 print(f"[RedisVRS._loop] Error fetching {name}: {e}")
                 traceback.print_exc()
-        return True
+                all_success = False
+        return all_success
 
     async def mget(self, keys: list[str]) -> list:
         return [v.decode() if v else None for v in await self.redis.mget(keys)] if keys else []
